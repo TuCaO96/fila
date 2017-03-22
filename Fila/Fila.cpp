@@ -1,3 +1,8 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
 class Fila {
 
 private:
@@ -35,3 +40,31 @@ public:
 	int tamanho();//retorna quantos itens existem na fila
 
 };
+
+Fila::Fila(int N) {
+
+}
+
+Fila::~Fila() {
+
+}
+
+void Fila::inserir(float item) {
+
+}
+
+float Fila::retirar() {
+
+}
+
+bool Fila::vazia() {
+
+}
+
+bool Fila::cheia() {
+
+}
+
+int Fila::tamanho() {
+
+}
