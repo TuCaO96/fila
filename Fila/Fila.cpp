@@ -13,6 +13,8 @@ private:
 
 	int Fim; //Fim da Fila
 
+	int NumItens; //Número de itens da fila
+
 	float *Items; /*Os items/elementos da fila (que serão
 
 				  alocados dinamicamente)*/
@@ -29,42 +31,60 @@ public:
 
 			 memória que foi adquirida no construtor.*/
 
-	void inserir(float NovoItem); //enfileira um novo item
+	void inserir(float NovoItem); //Enfileira um novo item
 
-	float retirar(); //desenfileira um item (retornando-o)
+	float retirar(); //Desenfileira um item (retornando-o)
 
-	bool vazia(); //verifica se a fila está vazia
+	bool vazia(); //Verifica se a fila está vazia
 
-	bool cheia(); //verifica se a fila está cheia
+	bool cheia(); //Verifica se a fila está cheia
 
-	int tamanho();//retorna quantos itens existem na fila
+	int tamanho();//Retorna quantos itens existem na fila
 
 };
 
 Fila::Fila(int N) {
-
+	this->CapMax = N;
+	this->Items = (float*)malloc(this->CapMax * sizeof(float));
+	this->Inicio = 0;
+	this->Fim = -1;
+	this->NumItens = 0;
 }
 
 Fila::~Fila() {
-
+	delete this;
 }
 
 void Fila::inserir(float item) {
+	if (this->Fim == this->CapMax - 1) {
+		this->Fim = -1;
+	}
 
+	this->Fim++; //Atualiza posicao final da lista
+	this->Items[this->Fim] = item; //adiciona item a fila
+	this->NumItens++; //Acresce contador de numero de itens
 }
 
 float Fila::retirar() {
+	float aux = this->Items[this->Inicio++]; //Pega o valor da posicao e acresce o primeiro
 
+	if (this->Inicio == this->CapMax) {
+		this->Inicio = 0;
+	}
+
+	this->NumItens--; //Retira item do contador
+
+	return aux;
 }
 
 bool Fila::vazia() {
-
+	return this->NumItens == 0;
 }
 
 bool Fila::cheia() {
-
+	return this->NumItens == this->CapMax;
 }
 
 int Fila::tamanho() {
-
+	return this->CapMax;
 }
