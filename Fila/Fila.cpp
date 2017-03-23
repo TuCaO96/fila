@@ -18,6 +18,33 @@ private:
 	float *Items; //Os items/elementos da fila (que serão alocados dinamicamente)
 
 public:
+	/**********
+		Inicio getters
+	**********/
+
+	int getInicio() {
+		return this->Inicio;
+	}
+
+	int getFim() {
+		return this->Fim;
+	}
+
+	int getCapacidade() {
+		return this->CapMax;
+	}
+
+	int getNumItens() {
+		return this->NumItens;
+	}
+
+	float* getItems() {
+		return (*this).Items;
+	}
+
+	/**********
+		Fim getters
+	**********/
 
 	Fila(int N); /*Construtor padrão, aloca dinamicamente
 
@@ -43,7 +70,7 @@ public:
 
 	Fila operator+(float); //Soma cada posição da fila com o valor float passado
 
-	Fila operator+=(Fila); //Soma nas posições da fila os valores da fila passada como parametro
+	Fila& operator+=(Fila); //Soma nas posições da fila os valores da fila passada como parametro
 
 	Fila operator==(Fila); //Só serão iguais se tiverem os mesmos elementos na mesma ordem (considerando a ordem dos elementos na fila, e não do vetor de armazenamento).
 
@@ -98,4 +125,26 @@ bool Fila::cheia() {
 
 int Fila::tamanho() {
 	return this->CapMax;
+}
+
+Fila& Fila::operator+=(Fila fila) {
+	for (int i = 0; i < this->CapMax; i++) {
+		this->Items[i] = this->Items[i] + fila.Items[i];
+	}
+
+	return *this;
+}
+
+ostream& operator<<(ostream& o, Fila& fila) {
+	int cont, i;
+
+	for (cont = 0, i = fila.getInicio; cont < fila.getNumItens; cont++) {
+
+		printf("%.2f\t", fila.getItems[i++]);
+
+		if (i == fila.getCapacidade)
+			i = 0;
+
+	}
+	printf("\n\n");
 }
