@@ -15,9 +15,7 @@ private:
 
 	int NumItens; //Número de itens da fila
 
-	float *Items; /*Os items/elementos da fila (que serão
-
-				  alocados dinamicamente)*/
+	float *Items; //Os items/elementos da fila (que serão alocados dinamicamente)
 
 public:
 
@@ -41,6 +39,19 @@ public:
 
 	int tamanho();//Retorna quantos itens existem na fila
 
+	Fila operator+(Fila); //Soma os valores de cada posição das duas filas
+
+	Fila operator+(float); //Soma cada posição da fila com o valor float passado
+
+	Fila operator+=(Fila); //Soma nas posições da fila os valores da fila passada como parametro
+
+	Fila operator==(Fila); //Só serão iguais se tiverem os mesmos elementos na mesma ordem (considerando a ordem dos elementos na fila, e não do vetor de armazenamento).
+
+	Fila operator!=(Fila); //O oposto da anterior. Se as filas tiverem tamanhos diferentes, já é possível considerá-las diferentes.
+
+	friend ostream& operator<<(ostream&, Fila); //Permite que uma fila seja impressa no cout. Mostra os elementos na ordem de saída da fila.
+
+	Fila operator[](float); //Exibe valor armazenado nessa posição da ordem da fila.
 };
 
 Fila::Fila(int N) {
