@@ -94,8 +94,8 @@ Fila::~Fila() {
 }
 
 void Fila::inserir(float item) {
-	if (this->Fim == this->CapMax) {
-		this->Fim = 0;
+	if (this->Fim == this->CapMax -1) {
+		this->Fim = -1;
 	}
 
 	this->Fim++; //Atualiza posicao final da lista
@@ -135,12 +135,29 @@ Fila& Fila::operator+=(Fila fila) {
 	return *this;
 }
 
+Fila Fila::operator+(Fila fila) {
+	Fila* filaResultante = new Fila(this->getCapacidade());
+	filaResultante->CapMax = this->getCapacidade();
+	filaResultante->Inicio = 0;
+	filaResultante->Fim = -1;
+	
+	for(int i = 0; i < this->getCapacidade(); i++) {
+		float soma = this->Items[i] + fila.Items[i];
+		filaResultante->inserir(soma);
+	}
+
+	return (*filaResultante);
+}
+
 ostream& operator<<(ostream& o, Fila& fila) {
 	int cont, i;
 
 	string msg = "";
 
-	for (cont = 0, i = fila.getInicio(); cont < fila.getNumItens(); cont++) {
+	i = fila.getInicio();
+	int f = fila.getFim();
+
+	for (cont = 0; cont < fila.getNumItens(); cont++) {
 
 		msg += to_string(fila.getItems()[i++]) + ", ";
 
@@ -152,8 +169,12 @@ ostream& operator<<(ostream& o, Fila& fila) {
 }
 
 int main(){
-
 	//Realizar operações aqui para testar a fila
-
+	Fila* fila = new Fila(5);
+	fila->inserir(1);
+	fila->inserir(2);
+	fila->inserir(3);
+	cout << "Fila: " << fila;
+	
 	return 0;
 }
