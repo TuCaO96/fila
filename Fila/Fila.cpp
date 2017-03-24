@@ -64,7 +64,7 @@ public:
 
 	bool cheia(); //Verifica se a fila está cheia
 
-	int tamanho();//Retorna quantos itens existem na fila
+	int tamanho(); //Retorna quantos itens existem na fila
 
 	Fila operator+(Fila); //Soma os valores de cada posição das duas filas
 
@@ -83,19 +83,19 @@ public:
 
 Fila::Fila(int N) {
 	this->CapMax = N;
-	this->Items = (float*)malloc(this->CapMax * sizeof(float));
+	this->Items = new float[N];
 	this->Inicio = 0;
-	this->Fim = -1;
+	this->Fim = 0;
 	this->NumItens = 0;
 }
 
 Fila::~Fila() {
-	delete this;
+	delete this->Items; //Libera ponteiro de itens na destruição da classe
 }
 
 void Fila::inserir(float item) {
-	if (this->Fim == this->CapMax - 1) {
-		this->Fim = -1;
+	if (this->Fim == this->CapMax) {
+		this->Fim = 0;
 	}
 
 	this->Fim++; //Atualiza posicao final da lista
@@ -124,7 +124,7 @@ bool Fila::cheia() {
 }
 
 int Fila::tamanho() {
-	return this->CapMax;
+	return this->NumItens;
 }
 
 Fila& Fila::operator+=(Fila fila) {
@@ -138,13 +138,22 @@ Fila& Fila::operator+=(Fila fila) {
 ostream& operator<<(ostream& o, Fila& fila) {
 	int cont, i;
 
-	for (cont = 0, i = fila.getInicio; cont < fila.getNumItens; cont++) {
+	string msg = "";
 
-		printf("%.2f\t", fila.getItems[i++]);
+	for (cont = 0, i = fila.getInicio(); cont < fila.getNumItens(); cont++) {
 
-		if (i == fila.getCapacidade)
+		msg += to_string(fila.getItems()[i++]) + ", ";
+
+		if (i == fila.getCapacidade()) //Se o fim estiver na posição 1 e o inicio na 2 por exemplo, será necessário voltar pro inicio da fila pra terminar
 			i = 0;
 
 	}
-	printf("\n\n");
+	return cout << msg;
+}
+
+int main(){
+
+	//Realizar operações aqui para testar a fila
+
+	return 0;
 }
