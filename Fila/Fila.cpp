@@ -66,17 +66,17 @@ public:
 
 	int tamanho(); //Retorna quantos itens existem na fila
 
-	Fila operator+(Fila); //Soma os valores de cada posição das duas filas
+	Fila operator+(Fila&); //Soma os valores de cada posição das duas filas
 
 	Fila operator+(float); //Soma cada posição da fila com o valor float passado
 
-	Fila &operator+=(Fila); //Soma nas posições da fila os valores da fila passada como parametro
+	Fila &operator+=(Fila&); //Soma nas posições da fila os valores da fila passada como parametro
 
 	bool operator==(Fila); //Só serão iguais se tiverem os mesmos elementos na mesma ordem (considerando a ordem dos elementos na fila, e não do vetor de armazenamento).
 
 	bool operator!=(Fila); //O oposto da anterior. Se as filas tiverem tamanhos diferentes, já é possível considerá-las diferentes.
 
-	friend ostream& operator<<(ostream&, Fila); //Permite que uma fila seja impressa no cout. Mostra os elementos na ordem de saída da fila.
+	friend ostream& operator<<(ostream&, Fila&); //Permite que uma fila seja impressa no cout. Mostra os elementos na ordem de saída da fila.
 
 	Fila operator[](float); //Exibe valor armazenado nessa posição da ordem da fila.
 };
@@ -127,9 +127,9 @@ int Fila::tamanho() {
 	return this->NumItens; //Retorna o num de itens
 }
 
-Fila &Fila::operator+=(Fila fila) {
+Fila &Fila::operator+=(Fila& fila) {
 	for (int i = 0; i < this->CapMax; i++) {
-		this->Items[i] = this->Items[i] + fila.Items[i]; //Percorre os dois arrays, somando seus valores
+		this->Items[i] = (*this).Items[i] + fila.Items[i]; //Percorre os dois arrays, somando seus valores
 	}
 
 	return *this;
@@ -162,7 +162,7 @@ bool Fila::operator!=(Fila fila) {
 	return resultado;
 }
 
-Fila Fila::operator+(Fila fila) {
+Fila Fila::operator+(Fila& fila) {
 	Fila *filaResultante = new Fila(this->getCapacidade()); //Cria fila que conterá o resultado da soma e define suas propriedades iniciais
 	filaResultante->CapMax = this->getCapacidade();
 	filaResultante->Inicio = 0;
@@ -175,6 +175,7 @@ Fila Fila::operator+(Fila fila) {
 
 	return (*filaResultante);
 }
+
 
 ostream& operator<<(ostream& o, Fila& fila) {
 	int i, cont;
@@ -213,8 +214,12 @@ int main(){
 	fila2->inserir(2);
 	fila->inserir(3);
 	fila2->inserir(4);
-	cout << "Fila: " << fila;
+	(*fila) = (*fila) + (*fila2);
+	cout << "Fila é diferente?" << (fila != fila2);
 	getchar();
-	
+
+	delete fila;
+	delete fila2;
+
 	return 0;
 }
