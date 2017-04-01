@@ -66,9 +66,9 @@ public:
 
 	int tamanho(); //Retorna quantos itens existem na fila
 
-	Fila operator+(Fila&); //Soma os valores de cada posição das duas filas
+	Fila &operator+(Fila&); //Soma os valores de cada posição das duas filas
 
-	Fila operator+(float); //Soma cada posição da fila com o valor float passado
+	Fila &operator+(float); //Soma cada posição da fila com o valor float passado
 
 	Fila &operator+=(Fila&); //Soma nas posições da fila os valores da fila passada como parametro
 
@@ -78,7 +78,7 @@ public:
 
 	friend ostream& operator<<(ostream&, Fila&); //Permite que uma fila seja impressa no cout. Mostra os elementos na ordem de saída da fila.
 
-	Fila operator[](float); //Exibe valor armazenado nessa posição da ordem da fila.
+	float operator[](float); //Exibe valor armazenado nessa posição da ordem da fila.
 };
 
 Fila::Fila(int N) {
@@ -135,6 +135,28 @@ Fila &Fila::operator+=(Fila& fila) {
 	return *this;
 }
 
+Fila &Fila::operator+(float num) {
+	for (int i = 0; i < this->CapMax; i++) {
+		this->Items[i] = (*this).Items[i] + num; //Percorre os dois arrays, somando seus valores
+	}
+
+	return *this;
+}
+
+Fila &Fila::operator+(Fila& fila) {
+	Fila *filaResultante = new Fila(this->getCapacidade()); //Cria fila que conterá o resultado da soma e define suas propriedades iniciais
+	filaResultante->CapMax = this->getCapacidade();
+	filaResultante->Inicio = 0;
+	filaResultante->Fim = -1;
+
+	for (int i = 0; i < this->getCapacidade(); i++) {
+		float soma = (*this).Items[i] + fila.Items[i]; //Calcula soma dos itens das duas filas e insere na fila resultante
+		filaResultante->inserir(soma);
+	}
+
+	return (*filaResultante);
+}
+
 bool Fila::operator==(Fila fila) {
 	bool resultado = true;
 	for (int i = 0; i < this->CapMax; i++) {
@@ -162,20 +184,29 @@ bool Fila::operator!=(Fila fila) {
 	return resultado;
 }
 
-Fila Fila::operator+(Fila& fila) {
-	Fila *filaResultante = new Fila(this->getCapacidade()); //Cria fila que conterá o resultado da soma e define suas propriedades iniciais
-	filaResultante->CapMax = this->getCapacidade();
-	filaResultante->Inicio = 0;
-	filaResultante->Fim = -1;
-	
-	for(int i = 0; i < this->getCapacidade(); i++) {
-		float soma = this->Items[i] + fila.Items[i]; //Calcula soma dos itens das duas filas e insere na fila resultante
-		filaResultante->inserir(soma);
+float Fila::operator[](float index) {
+	int i, cont = 0;
+
+	float result = NULL;
+
+	//e a fila tiver tamanho igual ou maior ao indice buscado, vai encontrar o numero armazenado nela
+	if ((*this).getCapacidade() >= index) {
+		for (i = (*this).getInicio(); cont != (*this).getNumItens(); i++) { //Itera de acordo com o numero de itens da fila
+
+			if (i == (*this).getCapacidade()) //Se o fim estiver na posição 1 e o inicio na 2 por exemplo, será necessário voltar pro inicio da fila pra terminar
+				i = 0;
+
+			if (i == index) {//Se for a ultima posição, nao precisa de colocar a virgula
+				return (*this).getItems()[i];
+			}
+
+			cont++; //Adiciona item percorrido ao contador
+
+		}
 	}
 
-	return (*filaResultante);
+	return result;
 }
-
 
 ostream& operator<<(ostream& o, Fila& fila) {
 	int i, cont;
@@ -196,9 +227,6 @@ ostream& operator<<(ostream& o, Fila& fila) {
 			o << fila.getItems()[i++] << ", "; //e não for, vai precisar de virgula para o proximo número
 		}
 
-		if (i == fila.getCapacidade()) //Se o fim estiver na posição 1 e o inicio na 2 por exemplo, será necessário voltar pro inicio da fila pra terminar
-			i = 0;
-
 		cont++; //Adiciona item percorrido ao contador
 
 	}
@@ -214,7 +242,7 @@ int main(){
 	fila2->inserir(2);
 	fila->inserir(3);
 	fila2->inserir(4);
-	(*fila) = (*fila) + (*fila2);
+	cout << (*fila)[2];
 	cout << "Fila é diferente?" << (fila != fila2);
 	getchar();
 
