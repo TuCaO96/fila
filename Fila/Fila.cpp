@@ -79,7 +79,22 @@ public:
 	friend ostream& operator<<(ostream&, Fila&); //Permite que uma fila seja impressa no cout. Mostra os elementos na ordem de saída da fila.
 
 	float operator[](float); //Exibe valor armazenado nessa posição da ordem da fila.
+
+	Fila(const Fila&);
 };
+
+Fila::Fila(const Fila& fila)
+{
+	//Aloca a memória
+	Items = new float;
+
+	//Copia valores pro objeto passado
+	*Items = *fila.Items;
+	CapMax = fila.CapMax;
+	Inicio = fila.Inicio;
+	NumItens = fila.NumItens;
+	Fim = fila.Fim;
+}
 
 Fila::Fila(int N) {
 	this->CapMax = N; //Define propriedades iniciais de uma fila
@@ -90,27 +105,28 @@ Fila::Fila(int N) {
 }
 
 Fila::~Fila() {
-	delete this->Items; //Libera ponteiro de itens na destruição da classe
+	delete[] this->Items; //Libera ponteiro de itens na destruição da classe
 }
 
+
 void Fila::inserir(float item) {
-	if (this->Fim == this->CapMax -1) { //Caso chegue no fim do array da fila, valor final estará na primeira posição dela
-		this->Fim = -1;
+	if (this->Fim == this->CapMax) { //Caso chegue no fim do array da fila, valor final estará na primeira posição dela
+		this->Fim = 0;
 	}
 
-	this->Fim++; //Atualiza posicao final da lista
-	this->Items[this->Fim] = item; //adiciona item a fila
-	this->NumItens++; //Acresce contador de numero de itens
+	(*this).Items[(*this).Fim] = item; //adiciona item a fila
+	(*this).Fim++; //Atualiza posicao final da lista
+	(*this).NumItens++; //Acresce contador de numero de itens
 }
 
 float Fila::retirar() {
 	float aux = this->Items[this->Inicio++]; //Pega o valor da posicao e acresce o primeiro
 
-	if (this->Inicio == this->CapMax) {
-		this->Inicio = 0;
+	if ((*this).Inicio == (*this).CapMax) {
+		(*this).Inicio = 0;
 	}
 
-	this->NumItens--; //Retira item do contador
+	(*this).NumItens--; //Retira item do contador
 
 	return aux;
 }
@@ -128,15 +144,19 @@ int Fila::tamanho() {
 }
 
 Fila &Fila::operator+=(Fila& fila) {
+
 	for (int i = 0; i < this->CapMax; i++) {
-		this->Items[i] = (*this).Items[i] + fila.Items[i]; //Percorre os dois arrays, somando seus valores
+		this->Items[i] = (*this).Items[(getInicio() + i) % getCapacidade()] + fila.Items[(fila.getInicio() + i) % fila.getCapacidade()]; //Percorre os dois arrays, somando seus valores
 	}
 
 	return *this;
 }
 
 Fila &Fila::operator+(float num) {
-	for (int i = 0; i < this->CapMax; i++) {
+	for (int i = this->getInicio(); i != this->Fim; i++) {
+		if (i == (*this).getCapacidade()) //Se o fim estiver na posição 1 e o inicio na 2 por exemplo, será necessário voltar pro inicio da fila pra terminar
+			i = 0;
+
 		this->Items[i] = (*this).Items[i] + num; //Percorre os dois arrays, somando seus valores
 	}
 
@@ -144,17 +164,14 @@ Fila &Fila::operator+(float num) {
 }
 
 Fila &Fila::operator+(Fila& fila) {
-	Fila *filaResultante = new Fila(this->getCapacidade()); //Cria fila que conterá o resultado da soma e define suas propriedades iniciais
-	filaResultante->CapMax = this->getCapacidade();
-	filaResultante->Inicio = 0;
-	filaResultante->Fim = -1;
 
-	for (int i = 0; i < this->getCapacidade(); i++) {
-		float soma = (*this).Items[i] + fila.Items[i]; //Calcula soma dos itens das duas filas e insere na fila resultante
-		filaResultante->inserir(soma);
+	Fila *filaResultante = new Fila(fila.getNumItens());
+
+	for (int i = 0; i < this->CapMax; i++) {
+		(*filaResultante).Items[i] = (*this).Items[(getInicio() + i) % getCapacidade()] + fila.Items[(fila.getInicio() + i) % fila.getCapacidade()]; //Percorre os dois arrays, somando seus valores
 	}
 
-	return (*filaResultante);
+	return *this;
 }
 
 bool Fila::operator==(Fila fila) {
@@ -187,8 +204,6 @@ bool Fila::operator!=(Fila fila) {
 float Fila::operator[](float index) {
 	int i, cont = 0;
 
-	float result = NULL;
-
 	//e a fila tiver tamanho igual ou maior ao indice buscado, vai encontrar o numero armazenado nela
 	if ((*this).getCapacidade() >= index) {
 		for (i = (*this).getInicio(); cont != (*this).getNumItens(); i++) { //Itera de acordo com o numero de itens da fila
@@ -205,49 +220,36 @@ float Fila::operator[](float index) {
 		}
 	}
 
-	return result;
+	return NULL;
 }
 
 ostream& operator<<(ostream& o, Fila& fila) {
-	int i, cont;
+	int posicao = fila.getInicio();
 
-	cont = 0;
-
-	int f = fila.getFim();
-
-	for (i = fila.getInicio(); cont != fila.getNumItens(); i++) { //Itera de acordo com o numero de itens da fila
-
-		if (i == fila.getCapacidade()) //Se o fim estiver na posição 1 e o inicio na 2 por exemplo, será necessário voltar pro inicio da fila pra terminar
-			i = 0;
-
-		if (fila.getItems()[i] == f) {//Se for a ultima posição, nao precisa de colocar a virgula
-			o << fila.getItems()[i++];
+	for (int i = 0; i < fila.getNumItens(); i++)
+	{
+		o << fila.getItems()[posicao++ % fila.getCapacidade()];
+		if (i != fila.getNumItens() - 1)
+		{
+			o << ", ";
 		}
-		else {
-			o << fila.getItems()[i++] << ", "; //e não for, vai precisar de virgula para o proximo número
-		}
-
-		cont++; //Adiciona item percorrido ao contador
-
 	}
 
 	return o;
 }
 
-int main(){
-	//Realizar operações aqui para testar a fila
-	Fila *fila = new Fila(5);
-	Fila *fila2 = new Fila(5);
-	fila->inserir(1);
-	fila2->inserir(2);
-	fila->inserir(3);
-	fila2->inserir(4);
-	cout << (*fila)[2];
-	cout << "Fila é diferente?" << (fila != fila2);
+int main() {
+	Fila *f = new Fila(3);
+	Fila *f2 = new Fila(3);
+	
+	f->inserir(1);
+	f->inserir(2);
+	f->inserir(3);
+	f2->inserir(1);
+	f2->inserir(2);
+	f2->inserir(3);
+	f2->retirar();
+	cout << (*f2);
 	getchar();
-
-	delete fila;
-	delete fila2;
-
 	return 0;
 }
