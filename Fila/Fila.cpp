@@ -241,15 +241,28 @@ ostream& operator<<(ostream& o, Fila& fila) {
 int main() {
 	Fila *f = new Fila(3);
 	Fila *f2 = new Fila(3);
-	
+	Fila *f3 = new Fila(3);
+	//inserções
 	f->inserir(1);
 	f->inserir(2);
 	f->inserir(3);
 	f2->inserir(1);
 	f2->inserir(2);
 	f2->inserir(3);
+	//remoções
 	f2->retirar();
+	//comparação
+	bool ehIgual = (*f2) == (*f);
+	cout << ehIgual;
+	cout << "\n";
+	//somas
+	(*f3) = (*f) + (*f2);
+	cout << (*f3);
+	cout << "\n";
+	(*f2) = (*f2) += (*f);
 	cout << (*f2);
+	cout << "\n";
+	cout << (*f);
 	getchar();
 	return 0;
 }
